@@ -60,43 +60,28 @@ namespace TicketClient
 
         private async void SaveButton_Click(object sender, RoutedEventArgs e)
         {
+            if (FilmsList.SelectedIndex == -1) return;
+            var item = (Film) FilmsList.SelectedItems[0];
+            var url = ConfigurationManager.AppSettings["api"];
+            var ticket = new Ticket
+            {
+                FilmId = item.Id,
+                Time = DateTime.Now,
+                Count = Convert.ToInt32(TicketText.Text)
+            };
+            if (ticket.Count <= 0) return;
             using (var client = new HttpClient())
             {
-                var item = (Film)FilmsList.SelectedItems[0];
-                var url = ConfigurationManager.AppSettings["api"];
-                var ticket = new Ticket
+                var response = await client.PostAsJsonAsync(url, ticket);
+                var content = await response.Content.ReadAsStringAsync();
+                content = content.Trim('\"');
+                var image = MessageBoxImage.Error;
+                if (response.IsSuccessStatusCode)
                 {
-                    FilmId = item.Id,
-                    Time = DateTime.Now,
-                    Count = Convert.ToInt32(TicketText.Text)
-                };
-                if (ticket.Count > 0)
-                {
-                    try
-                    {
-                        var response = await client.PostAsJsonAsync(url, new Ticket
-                        {
-                            FilmId = item.Id,
-                            Time = DateTime.Now,
-                            Count = Convert.ToInt32(TicketText.Text)
-                        });
-                        var content = await response.Content.ReadAsStringAsync();
-                        content = content.Trim('\"');
-                        if (response.IsSuccessStatusCode)
-                        {
-                            MessageBox.Show(content,"Продажа билетов", MessageBoxButton.OK, MessageBoxImage.Information);
-                            ClearSelected();
-                        }
-                        else
-                        {
-                            MessageBox.Show(content, "Продажа билетов", MessageBoxButton.OK, MessageBoxImage.Error);
-                        }
-                    }
-                    catch (Exception exception)
-                    {
-                        MessageBox.Show(exception.Message);
-                    }
+                    image = MessageBoxImage.Information;
+                    ClearSelected();
                 }
+                MessageBox.Show(content, "Продажа билетов", MessageBoxButton.OK, image);
             }
         }
 
@@ -113,26 +98,6 @@ namespace TicketClient
         {
             ClearSelected();
         }
-    }
-
-    public class Film
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public DateTime Time { get; set; }
-        public decimal Price { get; set; }
-        public int FreeCount { get; set; }
-        public override string ToString()
-        {
-            return Name;
-        }
-    }
-
-    public class Ticket
-    {
-        public DateTime Time { get; set; }
-        public int FilmId { get; set; }
-        public int Count { get; set; }
     }
 }
 

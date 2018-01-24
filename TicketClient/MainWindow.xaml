@@ -8,12 +8,12 @@
         Title="Продажа билетов" Height="350" Width="525" Loaded="Window_Loaded">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="51*"/>
-            <RowDefinition Height="47*"/>
-            <RowDefinition Height="44*"/>
-            <RowDefinition Height="53*"/>
-            <RowDefinition Height="49*"/>
-            <RowDefinition Height="79*"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
